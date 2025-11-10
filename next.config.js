@@ -1,9 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Минимальная конфигурация
   trailingSlash: true,
   images: {
-    unoptimized: true
+    domains: ['i.dummyjson.com'],
+    formats: ['image/webp', 'image/avif'],
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
   }
 }
 
