@@ -1,16 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',
   trailingSlash: true,
   images: {
-    domains: ['i.dummyjson.com'],
-    formats: ['image/webp', 'image/avif'],
+    unoptimized: true
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  }
 }
 
 module.exports = nextConfig
