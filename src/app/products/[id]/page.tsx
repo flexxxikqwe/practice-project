@@ -1,45 +1,45 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store';
+import { toggleFavorite, addToCart } from '@/store/productSlice';
 
-// Статические параметры для всех продуктов
-export async function generateStaticParams() {
-  return [
-    { id: '1' }, { id: '2' }, { id: '3' }, { id: '4' }, { id: '5' }, { id: '6' },
-    { id: '7' }, { id: '8' }, { id: '9' }, { id: '10' }, { id: '11' }, { id: '12' }
-  ];
-}
-
-// Mock данные
-const mockProducts = [
-  {
-    id: 1,
-    title: "iPhone 15 Pro",
-    description: "Новый iPhone с продвинутой камерой и процессором A17 Pro. Идеальный выбор для профессионалов.",
-    price: 999,
-    brand: "Apple",
-    thumbnail: "https://i.dummyjson.com/data/products/1/thumbnail.jpg",
-    rating: 4.8,
-    discountPercentage: 10,
-    category: "Смартфоны",
-    stock: 50
-  },
-  // ... остальные продукты такие же как были
-];
-
-interface PageProps {
-  params: { id: string };
-}
-
-// Серверный компонент без Redux
-export default function ProductDetailPage({ params }: PageProps) {
-  const productId = parseInt(params.id);
-  const product = mockProducts.find(p => p.id === productId);
+export default function ProductDetailPage() {
+  const params = useParams();
+  const dispatch = useDispatch();
+  const productId = parseInt(params.id as string);
+  
+  const { products, favorites, cart } = useSelector((state: RootState) => state.products);
+  const product = products.find(p => p.id === productId);
+  const isFavorite = favorites.includes(productId);
+  
+  const cartItem = cart.find(item => item.product.id === productId);
+  const inCart = Boolean(cartItem);
 
   const placeholderSVG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3E%3Crect width='600' height='400' fill='%231f2937'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='20' fill='%236b7280'%3E🖼️ Загрузка изображения...%3C/text%3E%3C/svg%3E";
 
   if (!product) {
-    notFound();
+    return (
+      <div className="min-h-screen bg-gray-900 py-8">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Продукт не найден</h1>
+          <Link href="/products" className="text-blue-400 hover:text-blue-300">
+            Вернуться к списку продуктов
+          </Link>
+        </div>
+      </div>
+    );
   }
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+  };
+
+  const handleToggleFavorite = () => {
+    dispatch(toggleFavorite(product.id));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8">
@@ -51,12 +51,14 @@ export default function ProductDetailPage({ params }: PageProps) {
           >
             ← Назад к продуктам
           </Link>
-          <Link 
-            href="/cart"
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-          >
-            🛒 Корзина
-          </Link>
+          <div className="flex gap-4">
+            <Link 
+              href="/cart"
+              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+            >
+              🛒 Корзина ({cart.reduce((total, item) => total + item.quantity, 0)})
+            </Link>
+          </div>
         </div>
 
         <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
@@ -73,7 +75,19 @@ export default function ProductDetailPage({ params }: PageProps) {
             </div>
             
             <div className="space-y-6">
-              <h2 className="text-4xl font-bold text-white mb-4">{product.title}</h2>
+              <div className="flex items-start justify-between">
+                <h2 className="text-4xl font-bold text-white mb-4">{product.title}</h2>
+                <button 
+                  onClick={handleToggleFavorite}
+                  className={`p-3 rounded-full transition-all ${
+                    isFavorite 
+                      ? 'bg-red-500 text-white animate-pulse' 
+                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  {isFavorite ? '❤️' : '🤍'}
+                </button>
+              </div>
               
               <p className="text-gray-300 text-lg leading-relaxed">{product.description}</p>
               
@@ -112,19 +126,26 @@ export default function ProductDetailPage({ params }: PageProps) {
               </div>
               
               <div className="flex gap-4 pt-4">
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors flex-1">
-                  🛒 Добавить в корзину
-                </button>
-                <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
-                  ❤️
+                <button 
+                  onClick={handleAddToCart}
+                  disabled={inCart}
+                  className={`flex-1 px-8 py-3 rounded-lg font-semibold transition-colors ${
+                    inCart
+                      ? 'bg-green-600 text-white cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  {inCart ? '✅ В корзине' : '🛒 Добавить в корзину'}
                 </button>
               </div>
 
-              <div className="bg-blue-900/30 border border-blue-700 rounded-lg p-4">
-                <p className="text-blue-400 text-center text-sm">
-                  💡 Для работы корзины и избранного перейдите на главную страницу продуктов
-                </p>
-              </div>
+              {inCart && (
+                <div className="bg-green-900/30 border border-green-700 rounded-lg p-4">
+                  <p className="text-green-400 text-center">
+                    ✅ Товар в корзине ({cartItem?.quantity} шт.)
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
