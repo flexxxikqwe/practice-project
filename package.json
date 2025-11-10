@@ -1,12 +1,15 @@
 {
-  "name": "ecosystem-alpha-practice",
+  "name": "practice-project",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://flexxxikqwe.github.io/practice-project",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build && next export",
+    "deploy": "npm run build && npm run export && gh-pages -d out -t true"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",
@@ -24,11 +27,9 @@
     "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
+    "gh-pages": "^6.1.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.0",
     "typescript": "^5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
   }
 }
