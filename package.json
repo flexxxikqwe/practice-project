@@ -1,18 +1,16 @@
 {
-  "name": "practice-project",
-  "version": "0.1.0", 
+  "name": "ecosystem-alpha-practice",
+  "version": "0.1.0",
   "private": true,
-  "homepage": "https://flexxxikqwe.github.io/practice-project",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "deploy": "npm run build && npx gh-pages -d out"
+    "lint": "next lint"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.10.1",
-    "lucide-react": "^0.553.0", 
+    "lucide-react": "^0.553.0",
     "next": "16.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
@@ -24,9 +22,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
-    "eslint": "^9", 
+    "eslint": "^9",
     "eslint-config-next": "16.0.1",
-    "gh-pages": "^6.1.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.0",
     "typescript": "^5"
